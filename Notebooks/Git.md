@@ -1,10 +1,10 @@
 # Git
 
-Learning notes from [Learn Git Branching](https://learngitbranching.js.org/?demo=&locale=zh_CN) ([Github](https://github.com/pcottle/learnGitBranching))
+Learning notes from [Learn Git Branching](https://learngitbranching.js.org/?NODEMO=&locale=zh_CN) ([Github](https://github.com/pcottle/learnGitBranching))
 
 
 
-## Basic
+## Basic Commands
 
 ### Commit
 
@@ -28,7 +28,7 @@ Take out series of modification records and duplicate to store in another place 
 
 
 
-## Advanced
+## Advanced Features
 
 Move on the commit tree
 
@@ -64,5 +64,35 @@ From the previous section, if want to specific a node in the commit log, Hash va
 
 
 
-##  Organize Commits
+##  Organize Commit Tree
+
+### Cherry-pick
+
+- `git cherry-pick <commit_Hash>`: Duplicate some commits under the current position (`HEAD`) (Good for commits with known Hash values)
+
+### Interactive Rebase
+
+- `--interactive` or `-i` (after the commands): Open a text file (in *Vim*) for commit log (Good for commits w/o. known Hash values)
+
+  (e.g., `git rebase -i HEAD~4`: The interactive mode will show 4 steps before `HEAD` (including `HEAD`))
+
+Used for: (actually creates a new “current” branch)
+
+1. Adjust the order of the commits
+2. Delete unwanted commits (through switching the `pick` mode): `omit` / `pick`
+3. Merge commits
+
+
+
+## Techniques and Tips
+
+### Local Stack Commit
+
+When debugging some debug sentences were added and printed in the `bugFix` branch, but they shouldn’t be included in the `main` branch after debugging. (If use fast-forward)
+
+Solution: Only duplicate the commit which solved all problems
+
+- `git rebase -i`
+- `git cherry-pick`
+
 
