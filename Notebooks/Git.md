@@ -187,4 +187,13 @@ To combine the fetching and merging operations:
 
 - `git pull` == `fetch` + `merge`
 
+### Locked Main
 
+**Remote Rejected**: If working in a big team, this can be a reason of the locked `main`. It requires some Pull Request processes to modify. If just commit to local and push, error messages can appear.
+
+Solution: Create a new branch and apply for the pull request
+
+
+</br>
+
+## Advanced Operations in Remote
