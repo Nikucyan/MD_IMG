@@ -187,6 +187,42 @@ To combine the fetching and merging operations:
 
 - `git pull` == `fetch` + `merge`
 
+### Push
+
+- `git push`: Update the local change to specific remote repository
+
+  if not specify, `git push` will call configuration file `push.default` (depending on the Git version, here is `upstream`)
+
+### Deviation
+
+If there is too much deviation from the previous sync. from between the local and the remote repository (or another commit has already written at the same position), `push` can be failed.
+
+- `rebase`
+
+  Adjust the working branch based on the latest remote branch
+
+  1. `git fetch`: Fetch the latest remote branch
+  2. `git rebase origin/main`: move our work to the new commit record
+  3. `git push`
+
+  OR
+
+  1. `git pull --rebase` (`fetch` + `rebase`) 
+  2.  `git push`
+
+- `merge` 
+
+  Tells that the changes in the latest commits have already been merged in the new commit and the new commit has 2 parental nodes (same as the normal merge)
+
+  1. `git fetch`
+  2. `git merge origin/main`
+  3. `git push`
+
+  OR
+
+  1. `git pull` (`fetch` + `merge`) 
+  2. `git push`
+
 ### Locked Main
 
 **Remote Rejected**: If working in a big team, this can be a reason of the locked `main`. It requires some Pull Request processes to modify. If just commit to local and push, error messages can appear.
