@@ -2,7 +2,7 @@
 
 Learning notes from [Learn Git Branching](https://learngitbranching.js.org/?NODEMO=&locale=zh_CN) ([Github](https://github.com/pcottle/learnGitBranching))
 
-
+</br>
 
 ## Basic Commands
 
@@ -27,6 +27,7 @@ Take out series of modification records and duplicate to store in another place 
 - `git rebase <branchname>`: Transfer the current branch node to the node that right after the one in the specific branch (actually duplication)
 
 
+</br>
 
 ## Advanced Features
 
@@ -63,6 +64,7 @@ From the previous section, if want to specific a node in the commit log, Hash va
 - `git revert HEAD`: Create a new commit after the current node, but the new node is the copy of the previous node. (e.g., revert C2, than create C2’ with same status as C1)
 
 
+</br>
 
 ##  Organize Commit Tree
 
@@ -83,6 +85,7 @@ Used for: (actually creates a new “current” branch)
 3. Merge commits
 
 
+</br>
 
 ## Techniques and Tips
 
@@ -90,9 +93,55 @@ Used for: (actually creates a new “current” branch)
 
 When debugging some debug sentences were added and printed in the `bugFix` branch, but they shouldn’t be included in the `main` branch after debugging. (If use fast-forward)
 
-Solution: Only duplicate the commit which solved all problems
+Solution: Only duplicate the final commit which solved all problems (in the `bugFix` branch)
 
 - `git rebase -i`
 - `git cherry-pick`
+
+### Tips on Committing
+
+On a node a commit is done, a new branch is created and another commit on that branch is done. But we want to modify this old node.
+
+- `rebase -i`
+
+  Steps: (Requires 2 times of re-ordering, not convenient)
+
+  1. `git rebase -i`: Re-order the commits and rank up the commit which is wanted to be modified
+  2. `git commit --amend`: Small modifications are done
+  3. `git rebase -i`: Re-order to the original sequence
+  4. Move `main` to the latest modification (e.g., `git branch -f main HEAD`)
+
+- `cherry-pick`
+
+  Step: (`cherry-pick` could be applied anywhere except for the upstream of `HEAD`)
+
+  1. `git cherry-pick`: Pick the one needed to be modified
+  2. `git commit --amend`
+  3. `git cherry-pick`: Pick again to re-order the following nodes to the modified node (This time the `main` is directly on the latest node)
+
+### Tags
+
+Sometimes we want some permanent links pointing to some specific commits. (Role of anchor points)
+
+- `git tag <tag_name> <commit_Hash>`: If no `commit` is specified, the tag is pointed to `HEAD` (Usually use `v1` to represent the Version 1.0)
+
+### Describe
+
+- `git describe <ref>`: Describe the nearest tag (Good to be used with `git bisect`)
+
+  (`git bisect`: A command to find the commit record that generated the bug)
+
+- `<ref>`: Any stuff which can be recognized by Git as the commit record (`HEAD` if not specified)
+
+Output: `<tag>_<numCommits>_g<hash>` (when `ref` has a `tag`, the output will be only the tag name)
+
+- `tag`: Closest `tag` with `ref`
+- `numCommits`: The number of commits from the `ref` to the `tag`
+- `hash`: the leading digits of the hash value of the `ref`
+
+
+</br>
+
+## Advanced Techniques
 
 
