@@ -140,8 +140,4 @@ Output: `<tag>_<numCommits>_g<hash>` (when `ref` has a `tag`, the output will be
 - `hash`: the leading digits of the hash value of the `ref`
 
 
-</br>
-
-## Advanced Techniques
-
 
