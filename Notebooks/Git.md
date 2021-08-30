@@ -25,6 +25,7 @@ Learning notes from [Learn Git Branching](https://learngitbranching.js.org/?NODE
 Take out series of modification records and duplicate to store in another place (make more linearlized committing history)
 
 - `git rebase <branchname>`: Transfer the current branch node to the node that right after the one in the specific branch (actually duplication)
+- `git rebase <branchname_A> <branchname_B>`: B (as well as nodes above B) will be placed after A
 
 
 </br>
@@ -109,7 +110,7 @@ On a node a commit is done, a new branch is created and another commit on that b
   1. `git rebase -i`: Re-order the commits and rank up the commit which is wanted to be modified
   2. `git commit --amend`: Small modifications are done
   3. `git rebase -i`: Re-order to the original sequence
-  4. Move `main` to the latest modification (e.g., `git branch -f main HEAD`)
+  4. Move `main` to the latest modification  (e.g., `git branch -f main HEAD` or `git rebase main <node>`)
 
 - `cherry-pick`
 
@@ -139,5 +140,12 @@ Output: `<tag>_<numCommits>_g<hash>` (when `ref` has a `tag`, the output will be
 - `numCommits`: The number of commits from the `ref` to the `tag`
 - `hash`: the leading digits of the hash value of the `ref`
 
+### Parental Commit
+
+`^` can also be followed by some digits. It means the specific parental commit node (after merging there will be several parental nodes)
+
+`^n` & `~n` can be combined to use in complicated branch networks. This also supports chain operation (e.g., `HEAD^2~3`)
+
+</br>
 
 
