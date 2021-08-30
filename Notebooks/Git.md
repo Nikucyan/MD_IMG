@@ -149,3 +149,42 @@ Output: `<tag>_<numCommits>_g<hash>` (when `ref` has a `tag`, the output will be
 </br>
 
 
+## Remote (Push & Pull)
+
+### Clone
+
+When using GitHub, we want a copy from the remote repository
+
+- `git clone`: Copy the remote repository to local
+
+### Remote Branch
+
+After `git clone`, a new branch `origin/main` in the original repository is generated. It is so called “remote branch”. It reflects the state from the latest communication. Another feature of remote branches is that when log out, `HEAD` will be splitted automatically. 
+
+- `origin/main`: `<remote_name>/<branch_name>`, `origin` is usually the name of the remote repository
+
+If in the current repository, for `origin/main`, `git commit` only creates commit with a splitted `HEAD` and both `main` & `orgin/main` does not move. Neither does `main` in the remote repo. The update will be done only after the corresponding branch in the remote repository updates.
+
+### Fetch
+
+Fetch data from the remote repository. Usually through `http://` or `git://` protocol
+
+- `git fetch`: If new commits are in the remote repository, the change will be synchornized to the local repository and local `origin/main` points to where the `main` in the remote repository points to. 
+
+This only downloads what is missing and modifies the remote branch pointers. It doesn’t modify the local files, or update the local `main` branch
+
+### Pull
+
+After fetching data, we should update to the practical work
+
+Conventionally, the operations can be 
+
+- `git cherry-pick origin/main`
+- `git rebase origin/main`
+- `git merge origin/main`
+
+To combine the fetching and merging operations:
+
+- `git pull` == `fetch` + `merge`
+
+
