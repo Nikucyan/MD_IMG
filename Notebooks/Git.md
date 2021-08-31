@@ -259,3 +259,51 @@ Differences between `rebase` & `merge`
 - `rebase`: Makes the commit tree in neat in one line, but modifies the commit order
 - `merge`: Good for those who love maintaining all history of commits
 
+### Tracking
+
+`main` is set to track `o/main` (This property is configured when cloning)
+
+In default:
+
+> - `local branch "main" set to track remote branch "o/main"` (when clone succeeded)
+
+If want to specify a new branch name:
+
+- `git checkout -b <new_branch_name> o/main`: Specify a new branch to track `o/main` 
+
+  In this case, `git pull` has `o/main` and the new branch updated with remote repository, but `main` is not updated (also valid for `git push` to push a not `o/main` branch to the remote repository)
+
+-  `git branch -u o/main <new_branch_name>`: The new branch is tracking `o/main`. (If currently in this branch `git branch -u o/main` is enough)
+
+### Push Parameters
+
+- `git push <remote> <place>`: Setting the remote repository and branch without locating at the corresponding position
+
+  (e.g., `git push origin main`: Checkout `main` in the local repository. Compare all commits with that in the `main` branch of the remote repository “`origin`” and add the missing ones)
+
+- `git push <remote> <source>:<destination>`: Stuff in `<place>` (refspec) is now specified. This time can push a source branch to a destination branch with different name (`<source>`, `<destination>` and other “refspecs” can be relative reference, and the `<destination>` can be a new branch)
+
+### Fetch Parameters
+
+Similar to the `push` parameters, but the uploads become downloads
+
+- `git fetch <remote> <place>`: Download the missing files from the remote repository to local `o/<place>`
+
+  (If use `<source>:<destination>` for `<place>`, the `<source>` should be the remote position)
+
+ ### Empty Source
+
+No `<source>`, but remain `:<destination>`
+
+e.g.,
+
+- `git push origin :side`: Delete the remote `side` branch
+- `git fetch origin :bugFix`: Create a new branch `bugFix` in local repository
+
+### Pull Parameters
+
+`pull` only focus on the final commit position
+
+- `git pull origin foo` == `git fetch origin foo; git merge o/foo` (no matter what happened in the `<destination>`, finally will be merged to the original branch)
+- `git pull origin bar~1:bugFix` == `git fetch origin bar~1:bugFix; git merge bugFix`
+
