@@ -2,7 +2,7 @@
 
 Learning notes from [Learn Git Branching](https://learngitbranching.js.org/?NODEMO=&locale=zh_CN) ([Github](https://github.com/pcottle/learnGitBranching))
 
-</br>
+
 
 ## Basic Commands
 
@@ -28,9 +28,8 @@ Take out series of modification records and duplicate to store in another place 
 - `git rebase <branchname_A> <branchname_B>`: B (as well as nodes above B) will be placed after A
 
 
-</br>
 
-## Advanced Features
+## Features
 
 Move on the commit tree
 
@@ -62,10 +61,9 @@ From the previous section, if want to specific a node in the commit log, Hash va
 ### Reset Changes
 
 - `git reset HEAD~1`: Back to the previous node, the current node cannot be found (actually still exist, but not added to temp)  (Not works in remote)
-- `git revert HEAD`: Create a new commit after the current node, but the new node is the copy of the previous node. (e.g., revert C2, than create C2’ with same status as C1)
+- `git revert HEAD`: Create a new commit after the current node, but the new node is the copy of the previous node (e.g., revert C2, than create C2’ with same status as C1)
 
 
-</br>
 
 ##  Organize Commit Tree
 
@@ -81,12 +79,11 @@ From the previous section, if want to specific a node in the commit log, Hash va
 
 Used for: (actually creates a new “current” branch)
 
-1. Adjust the order of the commits
-2. Delete unwanted commits (through switching the `pick` mode): `omit` / `pick`
-3. Merge commits
+- Adjust the order of the commits
+- Delete unwanted commits (through switching the `pick` mode): `omit` / `pick`
+- Merge commits
 
 
-</br>
 
 ## Techniques and Tips
 
@@ -99,7 +96,7 @@ Solution: Only duplicate the final commit which solved all problems (in the `bug
 - `git rebase -i`
 - `git cherry-pick`
 
-### Tips on Committing
+### Modify
 
 On a node a commit is done, a new branch is created and another commit on that branch is done. But we want to modify this old node.
 
@@ -110,7 +107,7 @@ On a node a commit is done, a new branch is created and another commit on that b
   1. `git rebase -i`: Re-order the commits and rank up the commit which is wanted to be modified
   2. `git commit --amend`: Small modifications are done
   3. `git rebase -i`: Re-order to the original sequence
-  4. Move `main` to the latest modification  (e.g., `git branch -f main HEAD` or `git rebase main <node>`)
+  4. Move `main` to the latest modification (e.g., `git branch -f main HEAD` or `git rebase main <node>`)
 
 - `cherry-pick`
 
@@ -146,7 +143,6 @@ Output: `<tag>_<numCommits>_g<hash>` (when `ref` has a `tag`, the output will be
 
 `^n` & `~n` can be combined to use in complicated branch networks. This also supports chain operation (e.g., `HEAD^2~3`)
 
-</br>
 
 
 ## Remote (Push & Pull)
@@ -229,7 +225,37 @@ If there is too much deviation from the previous sync. from between the local an
 
 Solution: Create a new branch and apply for the pull request
 
+### Practically
 
-</br>
+The process should be:
+
+1. Modify the files locally
+2. `git add <file_name>`
+3. `git commit` or `git commit --amend`
+4. `git push` (better to `pull` before `push`)
+
+
 
 ## Advanced Operations in Remote
+
+### Rebase (in Remote)
+
+In practical work, usually developers work in a feature branch splitted from the `main` branch. Only one time of combination should be applied. But sometimes some developers only `push`/`pull` on the `main` branch.
+
+The following workflow integrates 2 steps:
+
+1. Integrate all feature branches into `main`
+2. Push and update the remote branch
+
+Operations:
+
+1. `git pull --rebase`: `rebase` our work to the latest commit of the remote branch
+2. `git push`
+
+### Merge (in Remote)
+
+Differences between `rebase` & `merge`
+
+- `rebase`: Makes the commit tree in neat in one line, but modifies the commit order
+- `merge`: Good for those who love maintaining all history of commits
+
