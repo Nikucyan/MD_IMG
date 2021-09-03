@@ -806,7 +806,7 @@ e.g.	`polya`: $7 + 3x + 9x^8 + 5x ^{17}$;	`polyb`: $8x + 22x ^7 -9x^8$	Result: $
 - 关系：栈中元素为**线性关系**
 - 基本操作：`InitStack(S)`; `ClearStack(S)`; `IsEmpty(S)`; `IsFull(S)`; `Push(S, x)`; `Pop(S, x)`; `GetTop(S, x)`
 
-### 表示和实现
+### Representation  表示和实现
 
 基本存储结构：顺序（顺序栈） & 链式（链栈）
 
@@ -824,61 +824,59 @@ typedef struct {
 }	SeqStack
 ```
 
-##### Basic Operations 基本操作
+##### Initialization 初始化
 
-- **初始化**：
+``` c
+void InitStack(SeqStack *S) { // generate empty stack S
+    S -> top = -1;
+} 
+```
 
-  ``` c
-  void InitStack(SeqStack *S) { // generate empty stack S
-      S -> top = -1;
-  } 
-  ```
+##### Judge Empty  判断空栈
 
-- **判断空栈**：
+``` c
+int IsEmpty(SeqStack *S) {	// if empty return TRUE
+    return (S -> top == -1? TRUE:FALSE);
+}
+```
 
-  ``` c
-  int IsEmpty(SeqStack *S) {	// if empty return TRUE
-      return (S -> top == -1? TRUE:FALSE);
-  }
-  ```
+##### Judge Full  判断满栈
 
-- **判断满栈**：
+``` c
+int IsFull(SeqStack *S) {
+    return (S -> top == Stack_Size? TRUE:FALSE)
+}
+```
 
-  ``` c
-  int IsFull(SeqStack *S) {
-      return (S -> top == Stack_Size? TRUE:FALSE)
-  }
-  ```
+##### Push  进栈
 
-- **Push  进栈**
+![image-20210826170638322](https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20210826170638322.png) 
 
-   ![image-20210826170638322](https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20210826170638322.png) 
+```c
+int Push(SeqStack *S, StackElementType x) {	// insert an elem with value x on the top of stack S
+    if (S -> top == Stack_Size)
+        return (FALSE);	// Stack is full (Prevent overflow)
+    S -> top ++;
+    S -> elem[S -> top] = x;
+    return (TRUE);
+}
+```
 
-  ```c
-  int Push(SeqStack *S, StackElementType x) {	// insert an elem with value x on the top of stack S
-      if (S -> top == Stack_Size)
-          return (FALSE);	// Stack is full (Prevent overflow)
-      S -> top ++;
-      S -> elem[S -> top] = x;
-      return (TRUE);
-  }
-  ```
+##### Pop  出栈
 
-- **Pop  出栈**
+检查是否为空栈，避免下溢
 
-  检查是否为空栈，避免下溢
-
-  ``` c
-  int Pop(SeqStack *S, StackElementType *x) {	// pop the top element out and store in some x pointed space
-      if (S -> top == -1) // empty
-          return (FALSE);
-      else {
-          *x = S -> elem[S->top];
-          S -> top --;	// modify the top pointer
-          return (TRUE);
-      }
-  }
-  ```
+``` c
+int Pop(SeqStack *S, StackElementType *x) {	// pop the top element out and store in some x pointed space
+    if (S -> top == -1) // empty
+        return (FALSE);
+    else {
+        *x = S -> elem[S->top];
+        S -> top --;	// modify the top pointer
+        return (TRUE);
+    }
+}
+```
 
 
 #### Double-ended Sequential Stack  两栈共享（双端栈）
@@ -897,53 +895,180 @@ typedef struct
 
 ![image-20210902172521397](https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20210902172521397.png) 
 
-##### Basic Operations  基本操作
+##### Initializaion 初始化
 
-- **Initializaion 初始化**
+``` c
+void InitStack(DqStack *S)
+{
+    S -> top[0] = -1;
+    S -> top[1] = M;
+}
+```
 
-  ``` c
-  void InitStack(DqStack *S)
-  {
-      S -> top[0] = -1;
-      S -> top[1] = M;
-  }
-  ```
+##### Push  进栈
 
-- **Push  进栈**
+需要先**判断满栈（上溢）**（两栈栈顶相邻）
 
-  需要先**判断满栈（上溢）**（两栈栈顶相邻）
+``` c
+int Push(DqStack *S, StackElementType x, int i){	// i is the stack num
+    if (S->top[0] + 1 == S->top[1])	// Full Stack
+        returen(FALSE);
+    switch(i) {
+        case 0: S -> top[0]++; S -> Stack[S->top[0]] = x; break;
+        case 1: S -> top[1]--; S -> Stack[S->top[1]] = x; break;
+        default: return(FALSE);
+    }
+    return(TRUE);    
+}
+```
 
-  ``` c
-  int Push(DqStack *S, StackElementType x, int i){	// i is the stack num
-      if (S->top[0] + 1 == S->top[1])	// Full Stack
-          returen(FALSE);
-      switch(i) {
-          case 0: S -> top[0]++; S -> Stack[S->top[0]] = x; break;
-          case 1: S -> top[1]--; S -> Stack[S->top[1]] = x; break;
-          default: return(FALSE);
-      }
-      return(TRUE);    
-  }
-  ```
+##### Pop  出栈
 
-- **Pop  出栈**
+需要**判别是否产生下溢**（分别判别 0 和 1 的栈）
 
-  需要**判别是否产生下溢**（分别判别 0 和 1 的栈）
+``` c
+int Pop(DqStack *S, StackElementType *x, int i) {
+    switch(i) {
+        case 0: if(S->top[0] == -1) return(FALSE);
+            *x = S->Stack[S->top[0]]; S->top[0]--; break;
+        case 1: if(S->top[1] == M) return(FALSE);
+            *x = S->Stack[S->top[1]]; S->top[1]++; break;
+        default: return(FALSE);
+    }
+	return(TRUE);
+}
+```
 
-  ``` c
-  int Pop(DqStack *S, StackElementType *x, int i) {
-      switch(i) {
-          case 0: if(S->top[0] == -1) return(FALSE);
-              *x = S->Stack[S->top[0]]; S->top[0]--; break;
-          case 1: if(S->top[1] == M) return(FALSE);
-              *x = S->Stack[S->top[1]]; S->top[1]++; break;
-          default: return(FALSE);
-      }
-  	return(TRUE);
-  }
-  ```
-  
-  
+n 栈共享不适合顺序栈的方式（非动态结构）-> 更好的方式：链栈
+
+#### Linked Stack  链栈
+
+使用链表表示的栈
+
+![LinkStack](https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20210903172120033.png) 
+
+``` c
+typedef struct node {
+    StackElementType data;
+    struct node *next;
+} LinkStackNode;
+typedef LinkStackNode *LinkStack: 
+```
+
+##### Push  进栈
+
+![LinkStack_push](https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20210903173110917.png) 
+
+``` c
+int Push(LinkStacktop, StackElementType x)	{ 	// Data element x
+    LinkStackNode *temp;
+    temp = (LinkStackNode *)malloc(sizeof(LinkStackNode));
+    if(temp == NULL) 
+        return(FALSE);	// Fail to apply for memory space
+    temp->data = x; temp->next = top->next;
+    top->next = temp;	// Modify the current stack top pointer
+    return(TRUE);
+}
+```
+
+##### Pop  出栈
+
+``` c
+int Pop(LinkStacktop, StackElementType *x) {	// Pop the top element of Stack top and restore to space that x pointed to
+    LinkStackNode *temp; temp = top->next;
+    if(temp == NULL)	// Empty Stack
+        return(FALSE);
+    top->next = temp->next; *x = temp->data;
+    free(temp);
+    return(TRUE);
+}
+```
+
+##### Multiple Stacks  多栈
+
+链栈优势体现在多栈操作：将多个链栈的 top 指针放在一个一维数组中统一管理
+
+``` c
+#define M 10	// M 个链栈
+
+typedef struct node
+{
+    StackElementType data;
+    struct node	*next;
+} LinkStackNode, *LinkStack;
+```
+
+`top[0]`, `top[1]`, ..., `top[M-1]` 为 M 个链栈的栈顶指针，用一个（足够大的）M 大小的数组存放 top（只有系统空间满了才不能进栈）
+
+![Multiple Stacks](https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20210903194453677.png) 
+
+``` c
+int pushi(LinkStack top[M], int i, StackElementType x) {	// create a new linked stack i
+    LinkStackNode *temp;
+    temp = (LinkStackNode *)malloc(sizeof(LinkStackNode));
+    if(temp == NULL)
+        return(FALSE);
+    temp->data = x;
+    temp->next = top[i]->next;
+    top[i]->next = temp;
+    return(TRUE);
+}
+```
+
+对用户而言归还结点等同于为系统增加了空间
+
+### Application  栈的应用
+
+#### Bracket Match  括号配对问题
+
+在检验算法中设置一个栈，若读入左括号则入栈，等待相匹配的同类右括号；若读入右括号且与当前栈顶左括号同类则匹配，将栈顶的左括号出栈；否则不合法
+
+``` c
+void BracketMatch(char *str) {
+    Stack S; int i; char ch'
+        InitStack (&S);	// Initialization of Stack S
+    for(i=0; str[i]!='\0'; i++) {	// Input control
+        switch(str[i]) {	// if 
+            case '(':
+            case '[':
+            case '{':
+                Push(&S, str[i]); break;	// Push into the stack
+            case ')':
+            case ']':
+            case '}':
+                if(IsEmpty(S)) {	// No left paranthesis but there is a right one
+                    printf("\n Right parenthesis redundant");
+                    return;
+                }
+                else {	// Check if match.
+                    GetTop(&S, &ch);	// Get the closest left paranthesis
+                    if(Match(ch, stri[i]))	// Check match?
+                        Pop(&S, &ch);	
+                    else {
+                        printf("\n Left and right parentheses not match");
+                        return;
+                    }
+                } 
+        }	/*switch*/
+    }	/*for*/
+    if(IsEmpty(S))
+        printf("\n Parentheses matched");
+    else
+        printf("\n Left parenthesis redundant")
+}
+```
+
+If the input is `(z[a]n}`
+
+![image-20210903204731280](https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20210903204731280.png) 
+
+#### Solve Expression  表达式求值
 
 
+
+
+
+---
+
+P3 08：28
 
