@@ -10,7 +10,9 @@
 - `\t`: tab; `\n`: enter
 - In `scanf`: the input should add `&` before the var. name
 
-### Macro
+### Pre-definitions
+
+See ‘Pre-processor’ for more
 
 - **Header fies**: `#include<>`
 
@@ -729,7 +731,7 @@ int recFibo (int n, int f[])
 }
 ```
 
-### Enumerated Types (enum)
+### Enumerated Types (enum) (C99)
 
 Available in C99
 
@@ -758,4 +760,618 @@ enum Month next_month(enum Month current) {
 #### Bool
 
 Actually bool can be regarded as an enum type: `enum bool {FALSE, TRUE};`
+
+### Const Keyword (C99)
+
+``` c
+const type identifier = expression;	// cannot change after init.
+```
+
+``` c
+const double PI = 3.141592654;
+const double EPSILON = 1e-6;	// usually def as UPPERCASE -> divide from var.
+double rad;
+
+if (PI * rad * rad < EPSILON) {
+    printf("circle is too small \n")
+}
+```
+
+- `const` vs `enum`
+  - can represent non-integer values
+  - use const when the value of the constant matters (physical const, etc.)
+  - `const` more about the value, `enum` only distinguishes the different objects rather than some values
+- `const` vs `#define`
+  - a const variable gets its value at runtime
+  - a const variable is scoped (like all C var.)
+  - the priority of `#define` is higher 
+
+### Inline Functions (C99)
+
+A normal function call has a small overhead (managing stack, copying parameters values, etc.). It can become large if function is critical
+
+To reduce the overhead, usually write the called function inside the loop other than call one outside. (not that clean)
+
+-> **Inline functions**: Ask the compiler to replace each call to this function with **efficient equivalent code** that does not perform the call
+
+``` c
+inline int max(int a, int b){	// use `inline` before the type to indicate 
+    return a > b ? a : b;		// return the larger
+}
+
+int a, b, c, d;
+...					// when `max()` is inlined, the complier will compile the code as:
+int x = max(a, b);	// int x = a > b ? a : b;
+int y = max(c, d);	// int x = c > d ? c : d;
+int z = max(3, 4);	// int z = 4; (for const, just compute intermediately)
+```
+
+**Properties**:
+
+- **Larger** compiled files
+  - codes will be **relicated** in every call
+  - use only with **short** and **critical** functions only
+- Just a **recommendation**: 
+  - The compiler may not choose to inline a too long function or may choose to inline for optimization automatically
+- Hard to **predict** improve efficiency or not
+  - Use a **profiler** before
+
+### Pre-processor
+
+<img src="C:/Users/TR/Desktop/C_Preprocessor.svg" alt="C_Preprocessor" style="zoom:80%;" />
+
+#### Pre-process Usage
+
+- **File Inclusion**
+
+  ``` c
+  #include <file-name>	// mainly use standard lib headers
+  #include "file-name"	// for user def headers
+  ```
+
+- **Marco Definitions**
+
+  ``` c
+  #define identifier value
+  #define identifier(variables) value 	// function-like
+  #undef identifier		// undo definition
+  ```
+
+- **Conditional Compilation**
+
+  ``` c
+  #if condition
+  #ifdef identifier	// usually test if have been defined
+  #ifndef identifier
+  
+  #else
+  #endif
+  ```
+
+#### User Headers
+
+If there are some very complex functions needed to be defined. create a new header file to contain them.
+
+``` c
+// `functions.h` (only declarations, no details)
+int function1(int n);
+int function2(int n);
+```
+
+``` c
+// `functions.c` (details of the functions)
+int function1(int n) {
+    ...
+}
+
+int function2(int n) {
+    ...
+}
+```
+
+``` c
+// `main.c`
+#include "functions.h"	// ok to just include the .h file, the .c file will automatically add (implicitly)
+
+int main(){
+    printf("%d\n", function1(5));
+    return 0;
+}
+```
+
+Use `gcc -E main.c` (only preprocess the code) => The code that actually generate for compiling will be (`.c` file will not show up but linked to be used)
+
+``` c
+int function1(int n);	// only show up the declarations
+int function2(int n);
+
+int main(){
+    printf("%d\n", function1(5));
+    return 0;
+}
+```
+
+#### Macros
+
+Exactly, macros are replacements
+
+The preprocessor doesn’t know c codes. The job is replacing the texts exactly as it is directed
+
+For example: if `#define return :)`, for `return 0;` the result will be `:) 0;` [NOT compile]
+
+##### **Problems**
+
+- **Operator precedence errors**
+
+  - Internal
+
+    ``` c
+    #define SQR(x) x*x
+    
+    double res1 = SQR(5);	// = 5*5 (OK)
+    double res2 = SQR(5+3);	// = 5+3*5+3 (compute wrong thing)
+    ```
+
+  - External
+
+    ``` c
+    (int)SQR(a);	// (int)a * a	(casts the left operand only)
+    ```
+
+  - Solution: Use parentheses: `#define SQR(x) ((x)*(x))`
+
+- **Side effect errors** (no solution)
+
+  ``` c
+  SQR(++i)	// ((++i)*(++i))	=> undefined
+  ```
+
+- **Unncessary function calls** (no solution) 
+
+  ``` c
+  SQR(some_func(a, z, t)) 	// will compute the function twice
+  ```
+
+If cannot be solved in macros, try inline functions (such as `sqr(++i)` called by value => OK) 
+
+For complex ones try to use inline functions, for type not important value macro is sufficient.
+
+##### **Advanced Techniques**
+
+- Argument can turn to **string literal** containing the par.: `#define PRINT_INT(a) printf("%s = %d", #a, a)`
+- **Helper functions**: (Add an underline before the function name) `#define PRINT_INT(a) _print_int(a, #a)`
+
+##### **Conditionals**
+
+Often be used in the macro part
+
+- Demo with `#if` & `#endif`
+
+  ``` c
+  #define LOW 1
+  #define MEDIUM 2
+  #define HIGH 3
+  
+  #define LOGGING_LVL HIGH	// macros can use other previously defined macros
+  
+  void load_conf(){
+      
+      //...
+      
+  #if LOGGING_LEVEL > MEDIUM
+      printf("Conf loaded\n");
+  #endif
+      
+  }
+  ```
+
+  The preprocessed result:
+
+  ```c
+  void load_conf(){
+      
+      //...
+      printf("Conf loaded\n");
+      
+  }
+  ```
+
+- Another demo with `#ifdef`, `#else` & `endif`:
+
+  ``` c
+  #ifdef _WIN32
+  printf("Running on Windows");
+  #else
+  printf("Running on Unix");
+  #endif
+  ```
+
+- `defined(indentifier)`:
+
+  `#ifdef MY_MACRO` == `#if defined(MY_MACRO)`
+
+  `#ifndef MY_MACRO` == `#if !defined(MY_MACRO)`
+
+  ``` c
+  #ifdef DEBUG_ON
+  #define DEBUG_PRINT(MSG) fprintf(stderr, "%s", MSG)
+  #else
+  #define DEBUG_PRINT(MSG) ((void)0)
+  #endif
+  ```
+
+- Add extra checks while debugging (without affecting the performance of the final product)
+
+  ``` c
+  int safe_get(struct array arr, int i) {
+  #ifndef NDEBUG	
+      if (arr.a == NULL) {
+          fprintf(stderr, "Null array\n");
+          exit(1);
+      }
+      if (i < 0 || i >= arr.n) {
+          fprintf(stderr, "Out of bounds\n");
+          exit(1);
+      }
+  #endif
+      return arr.a[i];
+  }
+  ```
+
+  ``` c
+  struct array{
+      int* a;	// array name (pointer)
+      int n;	// array length
+  }
+  ```
+
+  ``` c
+  int sum = 0;
+  for (int i = 0; i < n; i++) {
+      sum += safe_get(arr, i);	// Adding #define NDEBUG removes all checks from compiled code
+  }
+  ```
+
+  (Or use `gcc -DNDEBUG`)
+
+##### Predefined Macros
+
+- Some special macros are predefined:	(Useful in debug)
+  - `__LINE__`: expands to the line num in the file being processed
+  - `__FILE__`: expands to the name of the file being processed
+- Some macros are defined by the compiler
+  - Allows code to compile under different environment
+
+##### Assert Macro
+
+- Def in `<assert.h>`, used to helpfind errors as early as possible
+
+``` c
+#ifdef NDEBUG
+#define assert(x) ((void)0)		// call the assert function, if no debug nothing will be done
+#else /* debugging enabled */
+void _assert (const char* condition, const char* filenamem, int line);	// helper func
+#define assert(e) ((e) ? (void)0 : _assert(#e, __FILE__, __LINE__))		// error @ which file and which line
+	// `_assert` just prints an error msg and calls abort()
+#endif	/* NDEBUG */
+```
+
+Possible Result: `Assertion failed: arr.a != NULL, file main.c, line 23`
+
+#### File Inclusions
+
+Most declarations must not appear more than once (must protect against including a file more than once)
+
+**DEMO**
+
+- Declare at `utility.h` (this is use to avoid including more than once)
+
+  ``` c
+  // conditional inclusion of this file
+  #ifndef UTILITY_H
+  #define UTILITY_H
+  
+  // the contents of utility.h comes here
+  ...
+  #endif /* UTILITY_H */
+  ```
+
+- Implement at `utility.c`
+
+  ``` c
+  #include "utility.h"
+  ...	//details
+  ```
+
+- Another declation of `testing.h`
+
+  ``` c
+  #ifndef TESTING_H
+  #define TESTING_H
+  #include "utility.h"
+  
+  // ...
+  
+  #endif /* TESTING_H */
+  ```
+
+- Details… at `testing.c`
+
+  ``` c
+  #include "utility.h"	// another inclusion of `utility.h`
+  #include "testing.h"	// will not include `utility.h` again
+  ...
+  ```
+
+- Main program: `main.c`
+
+  ``` c
+  #include "utility.h"	// recommend to write this part again
+  #include "testing.h"	// will not include `utility.h` again
+  ...
+  ```
+
+### Type Definition
+
+Declares a new type name. Commonly appear in a header file to share across code files. (if too many new types, a `types.h` could be useful)
+
+`typedef typename name-def` (actually add a nickname of a type)
+
+- Defining a **type** that may **need to be changed** in the future
+
+  `typedef double Real`: represents real numbers in a physics sim; if run into memory problems, change to float
+
+- Improve code **readability**: e.g. defined as `Length` (or other physics properties)
+
+- **Hide** implementation details
+
+  ```c
+  // stdio.h def a FILE type for reading/writing files
+  #include <stdio.h>
+  
+  FILE* in_file = fopen("params.dat");	
+  // implementation of the FILE type is irrelavent (only used through dedicated functions)
+  ```
+
+- **Abbreviate** long type names
+
+  ``` c
+  typedef enum Gender Gender;	// now `Gender` instead of `enum Gender`
+  ```
+
+### Structures (struct)
+
+Basis for defining new types in C that can represent **complicated objects**
+
+Each field has a **type** and a **name**
+
+```c
+struct name { field-list };
+```
+
+**Demo**: Complex num
+
+- `complex.h`
+
+  ```c
+  struct complex {
+      double re, im;	// real / imaginary parts
+  };
+  typedef struct complex Complex;	// the name is "struct complex" originally, -> "Complex"
+  
+  Complex complexAdd(Complex x, Complex y);	// given complex num x and y, return complex num (z in the following .c file)
+  // Usually we write the definition with its related functions in the same .h file
+  ```
+
+- `complex.c`
+
+  ```c
+  #include "complex.h"
+  
+  Complex complexAdd (Complex x, Complex y) {
+      Complex z;
+      z.re = x.re + y.re;
+      z.im = x.im + y.im;
+      return z;
+  }
+  ```
+  
+- Structures may be init. 
+
+  - In order -> NOT RECOMMENDED in most cases (break when change field order)
+
+    ``` c
+    Complex z = {2.3, -.4};
+    ```
+
+  - **Creation Function** -> Safer approach
+
+    ``` c
+    Complex complexCreate(double re, double im) {	
+        Complex z;
+        z.re = re;
+        z.im = im;
+        return z;
+    }	
+    ```
+
+    ``` c
+    Complex z = complexCreate(2.3, -.4)	// still work when we change the field order in the struct
+    ```
+
+
+**Usage**:
+
+- Return from functions
+
+  ``` c
+  double x = complexAdd(z1, z2).re;
+  ```
+
+- Assigning a structure copies its fields
+
+  ``` c
+  z2 = z1;	// copy both re and im
+  ```
+
+- Pass and return from function by copying by value
+
+  ``` c
+  void f(Complex c) {
+      c.re += 3;	// will not change the struct outside the function
+      //...
+  }
+  ```
+
+- Pointer in struct
+
+  - `(*pointer).value` equiv to `pointer->v`
+  - `*(ptr + k)` equiv to `ptr[k]`
+  
+  A pointer can have an integer **added** / **substracted** -> moves the address according to the size (mostly in arrays)
+  
+  <img src="https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20211108115709289.png" alt="image-20211108115709289" style="zoom:67%;" />
+
+### Pointers (Advanced)
+
+#### void* Pointers
+
+`void*` is used as a **generic** pointer type. (we don’t know its exact type but want a pointer)
+
+It cannot be dereferenced (i.e. with `*` or `[]`) and cannot be used with pointer arithmetic, unless it is cast to its true type.
+
+**DEMO**
+
+``` c
+int i = 1;
+double d = 1.0;
+
+void* ptr0 = &i;	// i and d's address (i's is int and d's is double)
+void* ptr1 = &d;	// these two pointers are valid but without types
+
+double e = *ptr0 + *ptr1;	// invalid (compilation error), cannot fetch result with *
+e = *(int*)ptr0 + *(double*)ptr1;	// valid, because have spec. the types
+```
+
+`void*` pointer can be used for generic **low-level memory operations** (avoid such code whenever possible)
+
+(Type `char` is guaranteed to occupy exactly 1 byte) -> casting a `void*` to `char*` allows accessing individual bytes in the memory
+
+``` c
+void swap (void* p, void* q, size_t nbytes) {	/* size_t is typedef from <stdlib.h> => counting bytes usually (unsigned) int */
+    for (int i = 0; i < nbytes; i++) {
+        char tmp = ((char*)p)[i];
+        ((char*)p)[i] = ((char*)q)[i];
+        ((char*)q)[i] = tmp;            
+    }
+}
+```
+
+``` c
+double d1, d2;
+int a[5], b[10];
+//...
+swap(&d1, &d2, sizeof(double));	// swap the storage address of d1 and d2
+swap(a, b, 5*sizeof(int));		// swap the first 5 elems
+```
+
+#### Const and Pointers
+
+- A **const pointer** cannot change where it points to 
+
+  ``` c
+  int x = 5;
+  int* const ptr = &x;	// ptr will always points to x
+  *ptr = 7;				// actually only change x
+  ptr++;					// NOT compile (ptr is const)
+  ```
+
+- A **pointer to a const** cannot change to what it points to 
+
+  ``` C
+  int x = 5;
+  const int* ptr = &x;	// ptr is pointer points to a constant integer (ptr will never change the value of x (const int))
+  *ptr = 7;				// NOT compile (x is const)
+  ptr++;					// OK, ptr points to another location
+  *ptr = 10;				// NOT compile
+  const int* const ptr2 = &x;	// can combine both const types
+  ```
+
+- Taking a **pointer to const** => not modify the contents of the pointer (useful for strings because we won’t modify them)
+
+  ``` c
+  char* strcpy(char* str1, const char* str2);		// copy str2 to str1 (str1 should not be const)
+  int strcmp(const char* str1, const char* str2);	// compare str1 and 2 (don't want to change both)
+  int strlen(const char* str);					// len to str
+  ```
+
+- A function taking a pointer not intending to modify => Using const
+
+  To distinguish in/outputs. Without it, pointers to const data cannot be passed to the func
+
+#### Pointers to Functions
+
+The type of a function => function’s signature
+
+``` c
+double sin(double);
+double cos(double);
+double fabs(double);	// in <math.h>, all these func have the same type
+```
+
+``` c
+double (*fptr)(double);
+// fptr can point to any func that takes one double and returns a double (in / output types)
+fptr = cos;		// point fptr to the code of func `cos()`
+fptr = printf;	// NOT compile => wrong type
+```
+
+**DEMO**
+
+``` c
+double derivative(double (*func)(double), double x) {	// deriv at x point
+    const double h = 1e-6;
+    double diff = func(x+h) - func(x-h);
+    return diff/(2*h);	// at small h -> tends to be the derivative
+}
+```
+
+``` c
+double square(double x) {	// also double (*func)(double)	(same type)
+    return x*x;
+}
+
+void compute() {	
+    printf("%lf\n", derivative(square, 1));		// 2.000	x^2 derivative at 1.0 
+    printf("%lf\n", derivative(sin, 0));		// 1.000
+    printf("%lf\n", derivative(cos, PI/2));		// -1.000
+}
+```
+
+### Dynamic Memory Allocation (Advanced)
+
+Predifined std func: (`<stdlib.h>`)
+
+``` c
+void* malloc (size_t num_bytes);
+void* calloc (size_t num_elem, size_t elem_size);	// Contiguous allocation. Only function that zeros the allocated bytes
+void* realloc (void* old_ptr, size_t new_size);		// Reallocations
+
+void free (void* ptr);
+```
+
+#### **Memory Management**
+
+- **Stack**: Stores **local** var. and calls to func.
+- **Heap**: Stores data **dynamically** allocated by the program (need to free)
+- **Data**: Stores **global var. and static func. var.**. Marked as read-only and stores string const
+- **Code**: Stores the machine code (read-only)
+
+<img src="https://cdn.jsdelivr.net/gh/Nikucyan/MD_IMG//img/image-20211108172732061.png" alt="image-20211108172732061" style="zoom:50%;" />
+
+C99 added variable-length arrays. However not good: (not intro to C++)
+
+Stack size - Small; Heap - Larger  => **Stack overflow** can occur, which is unrecoverable error
+
+
 
