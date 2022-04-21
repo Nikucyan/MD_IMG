@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="6cm" height="3cm" viewBox="178 110 101 52" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="179.124" y="111.875" width="49.4537" height="49.4658"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="179.124" y="111.875" width="49.4537" height="49.4658"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="228.526" y="111.929" width="49.4537" height="49.4658"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="228.526" y="111.929" width="49.4537" height="49.4658"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="203.666" cy="137.27" rx="5.78115" ry="5.78115"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="203.666" cy="137.27" rx="5.78115" ry="5.78115"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="203.666" cy="137.27" rx="5.78115" ry="5.78115"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="252.387" cy="137.051" rx="5.78115" ry="5.78115"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="252.387" cy="137.051" rx="5.78115" ry="5.78115"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="252.387" cy="137.051" rx="5.78115" ry="5.78115"/>
+  </g>
+  <text font-size="12.35" style="fill: #000000;text-anchor:start;font-family:Times New Roman;font-style:italic;font-weight:normal" x="198.595" y="154.668">
+    <tspan x="198.595" y="154.668">D</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1.4; stroke: #000000" x1="204.452" y1="137.266" x2="251.601" y2="137.054"/>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:Times New Roman;font-style:italic;font-weight:normal" x="234.543" y="133.244">
+    <tspan x="234.543" y="133.244">l</tspan>
+  </text>
+</svg>
